@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة الأستاذ عثمان محمد عبد المعبود — الراية في التاريخ</title>
+<style>
+    :root {
+        --gold: #c5a059;
+        --gold-light: #e2b76a;
+        --dark: #0f172a;
+        --dark-2: #1e293b;
+        --blue: #00d2ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        background-color: var(--dark);
+        color: #fff;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        margin: 0;
+        text-align: center;
+        min-height: 100vh;
+    }
+
+    header {
+        background: linear-gradient(45deg, #1e293b, #0f172a);
+        padding: 40px 20px;
+        border-bottom: 3px solid var(--gold);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+    }
+    .main-title {
+        color: var(--gold);
+        font-size: 2.2rem;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, .3);
+    }
+    .sub-title {
+        color: var(--blue);
+        font-size: 1.1rem;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    .search-container {
+        margin: 50px auto;
+        max-width: 500px;
+        padding: 25px 20px;
+        background: var(--dark-2);
+        border-radius: 15px;
+        border: 1px solid var(--gold);
+        box-shadow: 0 0 25px rgba(0, 0, 0, .4);
+    }
+    .search-container h3 { margin-top: 0; color: var(--gold); }
+
+    select, input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: none;
+        font-size: 16px;
+        font-family: inherit;
+        background: #fff;
+        color: var(--dark);
+    }
+    input { text-align: center; letter-spacing: 3px; font-weight: bold; }
+    select:focus, input:focus { outline: 2px solid var(--blue); }
+
+    button {
+        background: var(--gold);
+        color: #000;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 16px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: .3s;
+        width: 100%;
+        margin-top: 5px;
+    }
+    button:hover { background: var(--gold-light); transform: scale(1.03); }
+    button:active { transform: scale(.98); }
+
+    .error-msg {
+        color: #ff6b6b;
+        font-size: .95rem;
+        font-weight: bold;
+        min-height: 22px;
+        margin: 6px 0 0;
+    }
+
+    #resultCard {
+        display: none;
+        margin: 30px auto 60px;
+        max-width: 480px;
+        background: #fff;
+        color: #333;
+        padding: 25px 20px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px var(--blue);
+    }
+    #resultCard.show { display: block; animation: pop .45s ease; }
+    @keyframes pop {
+        from { opacity: 0; transform: translateY(25px) scale(.95); }
+        to   { opacity: 1; transform: none; }
+    }
+
+    #resName { margin: 0 0 6px; color: var(--dark); font-size: 1.35rem; }
+    #resGrade { margin: 0 0 15px; color: #666; font-size: .95rem; }
+
+    .percent {
+        font-size: 42px;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .bar {
+        height: 12px;
+        background: #e5e7eb;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 18px 0 15px;
+    }
+    .bar-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 20px;
+        transition: width 1s ease;
+    }
+
+    /* جدول الامتحانات */
+    .exam-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: .95rem;
+    }
+    .exam-table th,
+    .exam-table td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: right;
+    }
+    .exam-table th {
+        background: #f3f4f6;
+        color: var(--dark);
+        font-weight: bold;
+        border-radius: 6px;
+    }
+    .exam-table td:last-child {
+        text-align: left;
+        font-weight: bold;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+    .exam-table tr:last-child td { border-bottom: none; }
+
+    .exam-table .fail  { color: #dc2626; }
+    .exam-table .ok    { color: #d97706; }
+    .exam-table .good  { color: #16a34a; }
+
+    #resultMessage {
+        font-size: 1.05rem;
+        margin: 12px 0 0;
+        color: var(--dark-2);
+        font-weight: bold;
+        line-height: 1.7;
+    }
+    #studentNote {
+        font-size: .95rem;
+        color: #555;
+        margin: 8px 0 0;
+        font-style: italic;
+    }
+
+    #resultCard hr { border: none; border-top: 1px dashed #ccc; margin: 18px 0 12px; }
+    .card-footer { margin: 0; font-size: .9rem; color: #777; }
+
+    footer {
+        margin-top: 60px;
+        padding: 40px 20px;
+        background: #000;
+        border-top: 2px solid var(--gold);
+    }
+    .footer-text { font-size: 1.1rem; line-height: 1.8; }
+    .highlight { color: var(--gold); }
+    .dev-tag { color: var(--blue); font-size: .9rem; margin-top: 10px; display: block; }
+
+    @media (max-width: 480px) {
+        .main-title { font-size: 1.6rem; }
+        .sub-title { font-size: .95rem; }
+    }
+</style>
+</head>
+<body>
+
+    <header>
+        <h1 class="main-title">موقع الأستاذ عثمان محمد عبد المعبود</h1>
+        <p class="sub-title">الراية في التاريخ</p>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <h3>استعلام عن نتيجة الطالب</h3>
+
+            <select id="grade">
+                <option value="">اختر المرحلة الدراسية</option>
+                <option value="أولى إعدادي">أولى إعدادي</option>
+                <option value="ثانية إعدادي">ثانية إعدادي</option>
+                <option value="ثالثة إعدادي">ثالثة إعدادي</option>
+                <option value="أولى ثانوي">أولى ثانوي</option>
+                <option value="ثانية ثانوي">ثانية ثانوي</option>
+                <option value="ثالثة ثانوي">ثالثة ثانوي</option>
+                <option value="تانية بكالوريا">تانية بكالوريا</option>
+            </select>
+
+            <input type="text" id="studentCode" inputmode="numeric" maxlength="4"
+                   placeholder="أدخل كود الطالب المكون من 4 أرقام">
+
+            <button onclick="getResult()">عرض النتيجة</button>
+            <p class="error-msg" id="errorMsg"></p>
+        </div>
+
+        <div id="resultCard">
+            <h2 id="resName"></h2>
+            <p id="resGrade"></p>
+            <div class="percent" id="resPercent"></div>
+            <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+
+            <table class="exam-table" id="examTable">
+                <thead>
+                    <tr>
+                        <th>الامتحان</th>
+                        <th>الدرجة</th>
+                    </tr>
+                </thead>
+                <tbody id="examBody"></tbody>
+            </table>
+
+            <p id="resultMessage"></p>
+            <p id="studentNote"></p>
+            <hr>
+            <p class="card-footer">تحت رعاية مستر عثمان محمد عبد المعبود</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-text">
+            جميع الحقوق محفوظة لمنصة الأستاذ عثمان محمد عبد المعبود<br>
+            <span class="highlight">الراية في التاريخ</span>
+        </div>
+        <div class="dev-tag">تم البرمجة بواسطة: مبرمج محترف أحمد يسري</div>
+    </footer>
+
+    <script>
+        /* ================= قاعدة بيانات الطلاب =================
+           code : { name, grade, note, exams: [{name, score, total}] }
+           لازم الـ grade يطابق حرفيًا قيمة موجودة في الـ <select>
+        ========================================================= */
+        const students = {
+            "2001": {
+                name: "أحمد يسري",
+                grade: "تانية بكالوريا",
+                note: "شاطر ومجتهد — شد شوية في الامتحان التاني",
+                exams: [
+                    { name: "الامتحان الأول", score: 12, total: 15 },
+                    { name: "الامتحان الثاني", score: 6,  total: 8  }
+                ]
+            },
+            "3001": {
+                name: "سارة طارق",
+                grade: "تانية بكالوريا",
+                note: "شاطرة ومجتهدة — شدت شوية في الامتحان التاني",
+                exams: [
+                    { name: "الامتحان الأول", score: 12, total: 15 },
+                    { name: "الامتحان الثاني", score: 6,  total: 8  }
+                ]
+            },
+            "2008": {
+                name: "JOKER",
+                grade: "تانية بكالوريا",
+                note: "محتاج يحسّن مستواه ويشد على نفسه",
+                exams: [
+                    { name: "الامتحان الأول", score: 5, total: 15 },
+                    { name: "الامتحان الثاني", score: 2, total: 8  }
+                ]
+            }
+        };
+
+        /* تحويل الأرقام العربية / الفارسية إلى إنجليزية */
+        function toEnglishDigits(str) {
+            return str
+                .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+                .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+        }
+
+        /* الرسالة حسب النسبة المئوية */
+        function getMessage(p) {
+            if (p < 50) return "🚫 ساقط، حاول بجد في المرة القادمة.";
+            if (p < 60) return "✅ ناجح بالتوفيق، واشد على نفسك.";
+            if (p < 70) return "✅ ناجح، برجاء الالتزام والشد عن نفسك أكثر.";
+            if (p < 80) return "✅ ناجح وبالتوفيق، وإن شاء الله نشوفك في مرتبة أعلى.";
+            if (p < 90) return "✅ ناجح، وإن شاء الله بالتوفيق.";
+            return "🏆 شاطر وممتاز، ولك شهادة تقدير.";
+        }
+
+        /* لون الدرجة */
+        function scoreClass(score, total) {
+            const p = (score / total) * 100;
+            if (p < 50) return 'fail';
+            if (p < 75) return 'ok';
+            return 'good';
+        }
+
+        function showError(msg) {
+            document.getElementById('errorMsg').textContent = msg;
+        }
+
+        function getResult() {
+            const gradeEl = document.getElementById('grade');
+            const codeEl  = document.getElementById('studentCode');
+            const card    = document.getElementById('resultCard');
+
+            const grade = gradeEl.value;
+            const code  = toEnglishDigits(codeEl.value.trim());
+
+            card.classList.remove('show');
+            showError('');
+
+            /* 1) التحقق من المدخلات */
+            if (!grade) {
+                showError('من فضلك اختر المرحلة الدراسية أولاً.');
+                return;
+            }
+            if (!/^\d{4}$/.test(code)) {
+                showError('الكود لازم يكون 4 أرقام (مثال: 2008).');
+                return;
+            }
+
+            /* 2) البحث عن الطالب */
+            const student = students[code];
+            if (!student) {
+                showError('عذراً، الكود غير صحيح أو غير مسجل في قاعدة بيانات مستر عثمان.');
+                return;
+            }
+
+            /* 3) التأكد إن الكود تابع للمرحلة المختارة */
+            if (student.grade !== grade) {
+                showError('الكود ده مش تابع للمرحلة اللي اخترتها. اتأكد من المرحلة أو الكود.');
+                return;
+            }
+
+            /* 4) حساب المجموع والنسبة */
+            let totalScore = 0, totalMax = 0;
+            student.exams.forEach(ex => {
+                totalScore += ex.score;
+                totalMax   += ex.total;
+            });
+            const percentage = Math.round((totalScore / totalMax) * 100);
+
+            /* 5) بناء جدول الامتحانات */
+            const tbody = document.getElementById('examBody');
+            tbody.innerHTML = '';
+            student.exams.forEach(ex => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${ex.name}</td>
+                    <td class="${scoreClass(ex.score, ex.total)}">${ex.score} / ${ex.total}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            /* 6) لون حسب النسبة */
+            let color, barGradient;
+            if (percentage < 50)      { color = '#dc2626'; barGradient = '#dc2626'; }
+            else if (percentage < 75) { color = '#d97706'; barGradient = '#d97706'; }
+            else                      { color = '#16a34a'; barGradient = 'linear-gradient(90deg,#00d2ff,#16a34a)'; }
+
+            /* 7) عرض النتيجة */
+            document.getElementById('resName').textContent    = "الطالب: " + student.name;
+            document.getElementById('resGrade').textContent   = "المرحلة: " + student.grade;
+            document.getElementById('resPercent').textContent = percentage + "%";
+            document.getElementById('resPercent').style.color = color;
+            document.getElementById('resultMessage').textContent = getMessage(percentage);
+
+            const noteEl = document.getElementById('studentNote');
+            noteEl.textContent = student.note ? "📝 " + student.note : '';
+
+            card.classList.add('show');
+
+            /* أنيميشن شريط النسبة */
+            const bar = document.getElementById('barFill');
+            bar.style.width = "0%";
+            bar.style.background = barGradient;
+            setTimeout(() => { bar.style.width = percentage + "%"; }, 80);
+
+            card.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        /* تشغيل بالضغط على Enter */
+        document.getElementById('studentCode').addEventListener('keydown', e => {
+            if (e.key === 'Enter') getResult();
+        });
+    </script>
+</body>
+</html>
